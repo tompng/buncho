@@ -14,7 +14,6 @@ class Buncho {
     }
   }
   idle() {
-    this.floor = { x: this.position.x, y: this.position.y - this.legH }
     this.state = {
       type: 'idle',
       phase: 0,
@@ -26,7 +25,7 @@ class Buncho {
           ctx,
           {
             dir: this.dir,
-            leg: { x: this.floor.x - this.position.x - hx, y: this.floor.y - this.position.y - h },
+            leg: { x: this.floor.x - this.position.x - hx, y: this.floor.y - this.position.y - h, theta: this.dir * (this.floor.theta || 0) },
             rotate: -hx,
             drill: this.attack.drill
           }
@@ -103,7 +102,7 @@ class Buncho {
     this.position.y += this.velocity.y
     if (this.position.y < this.legH) {
       this.position.y = this.legH
-      this.floor = { x: this.position.x, y: this.position.y - 0.2 }
+      this.floor = { x: this.position.x, y: this.position.y - this.legH }
       this.velocity = { x: 0, y: 0 }
       this.idle()
       return
@@ -146,6 +145,7 @@ class Buncho {
     }
     if (this.velocity.x < 0) this.dir = -1
     if (this.velocity.x > 0) this.dir = +1
+    if (this.state.type === 'idle') return
     const testResult = stage.test({ ...this.position, r: this.legH / 2, l: this.legH })
     if (testResult && testResult.type === 'kick') {
       const dir = testResult.dir
@@ -158,7 +158,6 @@ class Buncho {
       if (this.velocity.y < 0) this.velocity = { x: 0, y: 0 }
       this.idle()
     }
-
   }
   render(ctx) {
     this.state.render(ctx)

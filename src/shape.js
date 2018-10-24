@@ -207,7 +207,7 @@ class BunchoShape {
       ctx.stroke()
       ctx.restore()
     }
-    renderLeg(legBase.map((p, i) => { return { x: p.x + 0.02 - 0.1 * i , y: p.y + 0.02 * i }}))
+    renderLeg(legBase.map((p, i) => { return { x: p.x - 0.04 * i, y: p.y + 0.02 + 0.02 * i }}))
     renderLeg(legBase)
   }
 }
