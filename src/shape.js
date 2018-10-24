@@ -211,3 +211,33 @@ class BunchoShape {
     renderLeg(legBase)
   }
 }
+
+
+const HandCoords = (() => {
+  const base = [
+    [{x:305,y:213},{x:305,y:204},{x:299,y:185},{x:301,y:178},{x:309,y:179},{x:313,y:193}],
+    [{x:313,y:193},{x:319,y:176},{x:322,y:162},{x:329,y:156},{x:333,y:166},{x:328,y:186}],
+    [{x:328,y:186},{x:335,y:168},{x:341,y:157},{x:348,y:160},{x:345,y:173},{x:339,y:188}],
+    [{x:339,y:188},{x:347,y:172},{x:354,y:164},{x:359,y:168},{x:357,y:179},{x:348,y:193}],
+    [{x:348,y:193},{x:359,y:180},{x:367,y:179},{x:364,y:188},{x:355,y:200},{x:345,y:210},{x:339,y:223}]
+  ]
+  const a = base[0][0]
+  const last = base[base.length - 1]
+  const b = last[last.length - 1]
+  const dx = b.x - a.x
+  const dy = b.y - a.y
+  const dr = Math.sqrt(dx ** 2 + dy ** 2)
+  const th = Math.atan2(dy, dx) + Math.PI
+  const cos = Math.cos(th)
+  const sin = Math.sin(th)
+  return base.map(l => {
+    return l.map(p => {
+      const x = (p.x - (a.x + b.x) / 2) * 2 / dr
+      const y = (p.y - (a.y + b.y) / 2) * 2 / dr
+      return {
+        x: cos * x + sin * y,
+        y: cos * y - sin * x
+      }
+    })
+  })
+})()

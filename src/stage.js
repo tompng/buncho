@@ -11,7 +11,6 @@ class Stage {
     this.ymax = 12
     this.colors = [
       '#a8f', '#fa8', '#8fa', '#8af'
-
     ]
   }
   render(ctx) {
@@ -24,7 +23,6 @@ class Stage {
       ctx.arc(obj.x, obj.y, obj.r, 0, 2 * Math.PI)
       ctx.fill()
     })
-
   }
   test(object, pointFrom) {
     if (object.y < object.l) {
