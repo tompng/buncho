@@ -6,6 +6,9 @@ class Stage {
       {x: 6, y: 0, r: 3},
       {x: -7, y: 4, r: 2}
     ]
+    this.xmin = -8
+    this.xmax = 8
+    this.ymax = 12
   }
   render(ctx) {
     ctx.fillStyle = 'red'
@@ -16,6 +19,34 @@ class Stage {
     })
   }
   test(object, pointFrom) {
+    if (object.y < object.l) {
+      return {
+        type: 'land',
+        floor: { x: object.x, y: 0 },
+        pos: { x: object.x, y: object.l }
+      }
+    }
+    if (object.x + object.r > this.xmax) {
+      return {
+        type: 'kick',
+        dir: { x: -1, y: 0 },
+        pos: { x: this.xmax - object.r, y: object.y }
+      }
+    }
+    if (object.x - object.r < this.xmin) {
+      return {
+        type: 'kick',
+        dir: { x: 1, y: 0 },
+        pos: { x: this.xmin + object.r, y: object.y }
+      }
+    }
+    if (object.y + object.r > this.ymax) {
+      return {
+        type: 'kick',
+        dir: { x: 0, y: -1 },
+        pos: { x: object.x, y: this.ymax - object.r }
+      }
+    }
     for (const o of this.objects) {
       const dx = object.x - o.x
       const dy = object.y - o.y

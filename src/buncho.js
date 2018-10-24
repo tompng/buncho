@@ -100,13 +100,6 @@ class Buncho {
     this.updateAttack()
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
-    if (this.position.y < this.legH) {
-      this.position.y = this.legH
-      this.floor = { x: this.position.x, y: this.position.y - this.legH }
-      this.velocity = { x: 0, y: 0 }
-      this.idle()
-      return
-    }
     if (this.state.type !== 'idle') {
       if (this.state.type == 'fly') {
         this.velocity.y = Math.max(this.velocity.y - 0.01, -0.1)
@@ -115,9 +108,6 @@ class Buncho {
       }
       this.velocity.x *= 0.96
     }
-    const xrange = 8
-    if (this.position.x > xrange) this.position.x = -xrange
-    if (this.position.x < -xrange) this.position.x = +xrange
     if (this.state.type === 'idle') {
       if (keymap.current.UP) {
         this.jump(0.2 * this.dir, 0.3)
