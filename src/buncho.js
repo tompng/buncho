@@ -96,7 +96,7 @@ class Buncho {
       }
     }
   }
-  update(keymap) {
+  update(keymap, stage) {
     this.state.phase++
     this.updateAttack()
     this.position.x += this.velocity.x
@@ -116,8 +116,9 @@ class Buncho {
       }
       this.velocity.x *= 0.96
     }
-    if (this.position.x > 4) this.position.x = -4
-    if (this.position.x < -4) this.position.x = +4
+    const xrange = 8
+    if (this.position.x > xrange) this.position.x = -xrange
+    if (this.position.x < -xrange) this.position.x = +xrange
     if (this.state.type === 'idle') {
       if (keymap.current.UP) {
         this.jump(0.2 * this.dir, 0.3)
@@ -131,7 +132,7 @@ class Buncho {
       this.velocity.y = 0.1
     } else if (this.state.type === 'fly') {
       if (keymap.current.UP) {
-        this.velocity.y = Math.min(this.velocity.y + 0.06, 0.04)
+        this.velocity.y = Math.min(this.velocity.y + 0.06, 0.2)
       }
       if (keymap.current.RIGHT) {
         this.velocity.x = Math.min(this.velocity.x + 0.02, 0.2)
@@ -145,6 +146,19 @@ class Buncho {
     }
     if (this.velocity.x < 0) this.dir = -1
     if (this.velocity.x > 0) this.dir = +1
+    const testResult = stage.test({ ...this.position, r: this.legH / 2, l: this.legH })
+    if (testResult && testResult.type === 'kick') {
+      const dir = testResult.dir
+      const v = 0.1
+      this.position = { ...testResult.pos }
+      this.velocity = { x: dir.x * v, y: dir.y * v}
+    } else if (testResult && testResult.type === 'land') {
+      this.position = testResult.pos
+      this.floor = testResult.floor
+      if (this.velocity.y < 0) this.velocity = { x: 0, y: 0 }
+      this.idle()
+    }
+
   }
   render(ctx) {
     this.state.render(ctx)

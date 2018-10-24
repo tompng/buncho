@@ -1,6 +1,7 @@
 <script src='src/shape.js'></script>
 <script src='src/buncho.js'></script>
 <script src='src/key.js'></script>
+<script src='src/stage.js'></script>
 <script>
 const canvas = document.createElement('canvas')
 onload = () => {
@@ -12,13 +13,15 @@ onload = () => {
   canvas.style.width = 512
   canvas.style.boxShadow='0 0 1px black'
   const b = new Buncho()
+  const stage = new Stage()
   setInterval(()=>{
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 800)
-    ctx.scale(128, -128)
-    b.update(keymap)
+    ctx.scale(64, -64)
+    b.update(keymap, stage)
     keymap.clear()
+    stage.render(ctx)
     b.render(ctx)
     ctx.restore()
   }, 20)
