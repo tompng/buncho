@@ -1,0 +1,13 @@
+<script src='app.js'></script>
+<script>
+const canvas = document.createElement('canvas')
+onload = () => {
+  document.body.appendChild(canvas)
+  canvas.width = canvas.height = 512
+  const ctx = canvas.getContext('2d')
+  ctx.translate(256, 256)
+  ctx.scale(256, -256)
+  canvas.style.boxShadow='0 0 1px black'
+  new Buncho().render(ctx)
+}
+</script>
