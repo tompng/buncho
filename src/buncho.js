@@ -9,6 +9,7 @@ class Buncho {
     this.dir = +1
     this.attack = {
       cooldown: 0,
+      cnt: 0,
       drill: null
     }
   }
@@ -75,11 +76,12 @@ class Buncho {
   }
   startAttack() {
     if (this.attack.cooldown > 0) return
-    if (Math.random() < 0.5) {
+    if (this.attack.cnt % 2 == 0) {
       this.attack.drill = { rotate: Math.random() }
     } else {
       this.attack.drill = { open: true }
     }
+    this.attack.cnt++
     this.attack.cooldown = 30
   }
   updateAttack() {
