@@ -23,9 +23,58 @@ onload = () => {
     b = new Buncho()
     stage = new Stage()
   }
-  const icon = new Buncho()
+  let opening = true
+  const openingStage = new Stage()
+  openingStage.xmin = -2
+  openingStage.xmax = 2
+  openingStage.ymax = 4
+  const openingBuncho = new Buncho()
   initialize()
+  function renderOpening() {
+    ctx.save()
+    ctx.clearRect(0, 0, 1024, 1024)
+    ctx.translate(512, 800)
+    ctx.scale(256, -256)
+    const ratio = 0.005
+    const dummyKeyMap = {
+      current: {
+        LEFT: openingBuncho.position.x > -0.1 && Math.random() < ratio || keymap.current.LEFT,
+        RIGHT: openingBuncho.position.x < 0.1 && Math.random() < ratio || keymap.current.RIGHT,
+        UP: (openingBuncho.state.type === 'jump' ? Math.random() < 8 * ratio : Math.random() < ratio) || keymap.current.UP,
+        DOWN: Math.random() < ratio || keymap.current.DOWN
+      }
+    }
+    openingBuncho.update(dummyKeyMap, openingStage)
+    openingBuncho.render(ctx)
+    ctx.restore()
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = '160px sans-serif'
+    ctx.fillText('↑', 512, 120)
+    ctx.fillText('←↓→', 512, 300)
+    ctx.font = '32px sans-serif'
+    ctx.strokeStyle = 'white'
+    ctx.lineWidth = 8
+    const strokefillText = (text, x, y) => {
+      ctx.strokeText(text, x, y)
+      ctx.fillText(text, x, y)
+    }
+    strokefillText('fly', 512, 110)
+    strokefillText('jump', 512, 160)
+    strokefillText('attack', 512, 300)
+    strokefillText('left', 352, 300)
+    strokefillText('right', 662, 300)
+
+    ctx.font = '64px sans-serif'
+    ctx.fillText('press SPACE to start', 512, 500)
+  }
   setInterval(()=>{
+    if (opening) {
+      renderOpening()
+      if (keymap.current.SPACE) opening = false
+      return
+    }
+
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 800)
@@ -40,7 +89,7 @@ onload = () => {
       }
     }
     if (!gameover) {
-      if (keymap.current.LEFT || keymap.current.RIGHT || keymap.current.UP || keymap.current.DOWN) {
+      if (keymap.current.LEFT || keymap.current.RIGHT || keymap.current.UP) {
         started = true
       }
       b.update(keymap, stage)
