@@ -233,7 +233,7 @@ class Buncho {
       this.fly()
       this.velocity.y = 0.02
     } else if (this.state.type === 'fly' && key) {
-      this.velocity.y = Math.min(this.velocity.y + 0.001, 0.1)
+      this.velocity.y = Math.min(this.velocity.y + 0.0012, 0.04)
     }
   }
   render(ctx) {
