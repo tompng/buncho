@@ -7,6 +7,8 @@
 const canvas = document.createElement('canvas')
 onload = () => {
   const keymap = new KeyMap()
+  const img = new Image()
+  img.src = 'gameover.png'
   keymap.attach(document)
   document.body.appendChild(canvas)
   canvas.width = canvas.height = 1024
@@ -20,6 +22,7 @@ onload = () => {
     b = new Buncho()
     stage = new Stage()
   }
+  const icon = new Buncho()
   initialize()
   setInterval(()=>{
     ctx.save()
@@ -53,8 +56,6 @@ onload = () => {
       ctx.lineWidth = 0.2
       ctx.strokeStyle = 'gray'
       ctx.fillStyle = 'red'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
       ctx.beginPath()
       ctx.rect(-0.15, -0.15, 0.3, 0.3)
       ctx.rect(-0.15, 0.4, 0.3, 0.8)
@@ -63,6 +64,15 @@ onload = () => {
       ctx.restore()
     }
     ctx.restore()
+    if (gameover && gameover.count > 10) {
+      ctx.save()
+      ctx.globalAlpha = Math.min((gameover.count - 10) / 40, 1)
+      ctx.drawImage(img, 0, 0, 1024, 1024)
+      ctx.globalAlpha = Math.max(0, Math.min((gameover.count - 50) / 40, 1))
+      ctx.fillStyle = 'white'
+      ctx.fillRect(0, 0, 1024, 1024)
+      ctx.restore()
+    }
   }, 20)
 }
 </script>
