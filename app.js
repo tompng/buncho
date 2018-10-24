@@ -255,7 +255,7 @@ class Buncho {
           ctx,
           {
             dir: this.dir,
-            leg: { x: -1, y: -0.5, theta: 0.6 },
+            leg: { x: -1 * this.dir, y: -0.5, theta: 0.6 },
             wings: [2 * Math.random() - 1, 2 * Math.random() - 1, 2 * Math.random() - 1],
             drill: this.attack.drill
           }
@@ -331,7 +331,7 @@ class Buncho {
     if (this.position.x < -4) this.position.x = +4
     if (this.state.type === 'idle') {
       if (KeyMap.UP) {
-        this.jump(0.2, 0.3)
+        this.jump(0.2 * this.dir, 0.3)
       } else if (KeyMap.RIGHT) {
         this.jump(0.2, 0.2)
       } else if (KeyMap.LEFT) {
