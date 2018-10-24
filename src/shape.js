@@ -1,4 +1,4 @@
-CanvasRenderingContext2D.prototype.curve = function(points, closed) {
+CanvasRenderingContext2D.prototype.curve = function(points, closed, noMove) {
   const dfunc = array => {
     const out = array.map(v => { return { v, d: 0 } })
     for (let n = 0; n < 4; n++) {
@@ -15,7 +15,7 @@ CanvasRenderingContext2D.prototype.curve = function(points, closed) {
   }
   const xs = dfunc(points.map(p => p.x))
   const ys = dfunc(points.map(p => p.y))
-  this.moveTo(xs[0].v, ys[0].v)
+  if (!noMove) this.moveTo(xs[0].v, ys[0].v)
   const len = closed ? points.length : points.length - 1
   for (let i  = 0; i < len; i++) {
     const s = 1 / 3
@@ -111,9 +111,10 @@ class BunchoShape {
     ctx.rotate(option.rotate || 0)
     ctx.beginPath()
     ctx.curve(shape.up)
-    ctx.curve(shape.down)
+    ctx.curve(shape.down, false, true)
     ctx.fillStyle = 'white'
     ctx.strokeStyle = 'black'
+    ctx.closePath()
     ctx.fill()
     ctx.stroke()
     if (option.drill && option.drill.rotate) {
