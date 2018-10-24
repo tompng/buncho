@@ -11,7 +11,6 @@ CanvasRenderingContext2D.prototype.curve = function(points, closed) {
         out[i].d = (3 * (out[ib].v - out[ia].v) - out[ia].d - out[ib].d) / k
       })
     }
-    if (closed) console.error(out)
     return out
   }
   const xs = dfunc(points.map(p => p.x))
@@ -215,7 +214,11 @@ class Buncho {
     this.position = { x: 0, y: this.legH }
     this.velocity = { x: 0, y: 0 }
     this.floor = { x: 0, y: 0 }
-    this.jump()
+    this.idle()
+    this.attack = {
+      cooldown: 0,
+      drill: null
+    }
   }
   idle() {
     this.floor = { x: this.position.x, y: this.position.y - this.legH }
@@ -223,14 +226,15 @@ class Buncho {
       type: 'idle',
       phase: 0,
       render: (ctx) => {
-        const h = Math.sin(this.state.phase * 0.04) * 0.02
-        const hx = Math.sin(this.state.phase * 0.04 - 1) * 0.01
+        const h = Math.sin(this.state.phase * 0.2) * 0.02
+        const hx = Math.sin(this.state.phase * 0.2 - 1) * 0.01
         ctx.translate(this.position.x + hx, this.position.y + h)
         this.shape.render(
           ctx,
           {
             leg: { x: this.floor.x - this.position.x - hx, y: this.floor.y - this.position.y - h },
-            rotate: -hx
+            rotate: -hx,
+            drill: this.attack.drill
           }
         )
       }
@@ -245,7 +249,8 @@ class Buncho {
           ctx,
           {
             leg: { x: -1, y: -0.5, theta: 0.6 },
-            wings: [2 * Math.random() - 1, 2 * Math.random() - 1, 2 * Math.random() - 1]
+            wings: [2 * Math.random() - 1, 2 * Math.random() - 1, 2 * Math.random() - 1],
+            drill: this.attack.drill
           }
         )
       }
@@ -257,8 +262,8 @@ class Buncho {
       leg: this.floor,
       phase: 0,
       render: (ctx) => {
-        const lt = Math.exp(-this.state.phase / 32)
-        const pt = Math.exp(-this.state.phase / 16)
+        const lt = Math.exp(-this.state.phase / 8)
+        const pt = Math.exp(-this.state.phase / 4)
         const pos = { x: this.position.x, y: this.position.y - 0.5 * 4 * (1 - pt) * pt }
         const leg = {
           x: this.state.leg.x * lt + this.position.x * (1 - lt),
@@ -267,15 +272,37 @@ class Buncho {
         ctx.translate(pos.x, pos.y)
         this.shape.render(
           ctx,
-          { leg: { x: leg.x - pos.x, y: leg.y - pos.y, grad: 0 } }
+          { leg: { x: leg.x - pos.x, y: leg.y - pos.y, grad: 0 }, drill: this.attack.drill }
         )
       }
     }
     this.floor = null
-    this.velocity = { x: vx || 0.02, y: vy || 0.05 }
+    this.velocity = { x: vx, y: vy }
   }
-  update(key, keyPress) {
-    this.state.phase ++
+  startAttack() {
+    if (this.attack.cooldown > 0) return
+    if (Math.random() < 0.5) {
+      this.attack.drill = { rotate: Math.random() }
+    } else {
+      this.attack.drill = { open: true }
+    }
+    this.attack.cooldown = 40
+  }
+  updateAttack() {
+    this.attack.cooldown--
+    if (this.attack.cooldown < 20) {
+      this.attack.drill = null
+    } else {
+      if (this.attack.drill.rotate) {
+        this.attack.drill.rotate = Math.random()
+      } else {
+        this.attack.drill.open = !this.attack.drill.open
+      }
+    }
+  }
+  update(KeyMap, KeyPressedMap) {
+    this.state.phase++
+    this.updateAttack()
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
     if (this.position.y < this.legH) {
@@ -286,20 +313,24 @@ class Buncho {
       return
     }
     if (this.state.type !== 'idle') {
-      this.velocity.y = Math.max(this.velocity.y - 0.001, -0.1)
+      this.velocity.y = Math.max(this.velocity.y - 0.04, -1)
     }
     if (this.position.x > 4) this.position.x = -4
-    if (this.state.type === 'idle' && key) {
-      this.jump()
-    } else if (this.state.type === 'jump' & keyPress) {
+    if (this.state.type === 'idle' && (KeyMap.UP)) {
+      this.jump(0.2, 0.3)
+    } else if (this.state.type === 'idle' && KeyMap.RIGHT) {
+      this.jump(0.2, 0.2)
+    } else if (this.state.type === 'jump' && (KeyPressedMap.UP)) {
       this.fly()
-      this.velocity.y = 0.02
-    } else if (this.state.type === 'fly' && key) {
-      this.velocity.y = Math.min(this.velocity.y + 0.0012, 0.04)
+      this.velocity.y = 0.1
+    } else if (this.state.type === 'fly' && (KeyMap.UP)) {
+      this.velocity.y = Math.min(this.velocity.y + 0.06, 0.04)
+    }
+    if (KeyMap.SPACE) {
+      this.startAttack()
     }
   }
   render(ctx) {
     this.state.render(ctx)
   }
-
 }
