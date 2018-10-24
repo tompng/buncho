@@ -1,22 +1,30 @@
 class Stage {
   constructor() {
     this.objects = [
-      {x: 1, y: 8, r: 1},
-      {x: -1, y: 5, r: 1},
-      {x: 6, y: 0, r: 3},
-      {x: -7, y: 4, r: 2}
+      {x: 1, y: 8, r: 1, id: 0 },
+      {x: -1, y: 5, r: 1, id: 1 },
+      {x: 6, y: 0, r: 3, id: 2 },
+      {x: -7, y: 4, r: 2, id: 3 }
     ]
     this.xmin = -8
     this.xmax = 8
     this.ymax = 12
+    this.colors = [
+      '#a8f', '#fa8', '#8fa', '#8af'
+
+    ]
   }
   render(ctx) {
-    ctx.fillStyle = 'red'
+    ctx.fillStyle = '#aca'
+    const h = 0.1
+    ctx.fillRect(this.xmin, -h, this.xmax - this.xmin, h)
     this.objects.forEach(obj => {
       ctx.beginPath()
+      ctx.fillStyle = this.colors[obj.id % this.colors.length]
       ctx.arc(obj.x, obj.y, obj.r, 0, 2 * Math.PI)
       ctx.fill()
     })
+
   }
   test(object, pointFrom) {
     if (object.y < object.l) {
