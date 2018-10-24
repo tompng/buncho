@@ -16,6 +16,7 @@ onload = () => {
   canvas.style.width = 512
   canvas.style.boxShadow='0 0 1px black'
   let b, stage, gameover
+  let started = false
   function initialize() {
     gameover = null
     enemies = [new Enemy(), new Enemy()]
@@ -34,12 +35,16 @@ onload = () => {
       gameover.count++
       if (gameover.count > 100) {
         gameover = null
+        started = false
         initialize()
       }
     }
     if (!gameover) {
+      if (keymap.current.LEFT || keymap.current.RIGHT || keymap.current.UP || keymap.current.DOWN) {
+        started = true
+      }
       b.update(keymap, stage)
-      enemies.forEach(e => e.update(b))
+      if (started) enemies.forEach(e => e.update(b))
     }
     enemies.forEach(e => {
       if (!gameover && e.test(hrange)) gameover = {
