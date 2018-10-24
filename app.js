@@ -215,6 +215,7 @@ class Buncho {
     this.velocity = { x: 0, y: 0 }
     this.floor = { x: 0, y: 0 }
     this.idle()
+    this.dir = +1
     this.attack = {
       cooldown: 0,
       drill: null
@@ -286,11 +287,11 @@ class Buncho {
     } else {
       this.attack.drill = { open: true }
     }
-    this.attack.cooldown = 40
+    this.attack.cooldown = 30
   }
   updateAttack() {
     this.attack.cooldown--
-    if (this.attack.cooldown < 20) {
+    if (this.attack.cooldown < 10) {
       this.attack.drill = null
     } else {
       if (this.attack.drill.rotate) {
@@ -313,22 +314,41 @@ class Buncho {
       return
     }
     if (this.state.type !== 'idle') {
-      this.velocity.y = Math.max(this.velocity.y - 0.04, -1)
+      if (this.state.type == 'fly') {
+        this.velocity.y = Math.max(this.velocity.y - 0.01, -0.1)
+      } else {
+        this.velocity.y = Math.max(this.velocity.y - 0.04, -1)
+      }
+      this.velocity.x *= 0.96
     }
     if (this.position.x > 4) this.position.x = -4
-    if (this.state.type === 'idle' && (KeyMap.UP)) {
-      this.jump(0.2, 0.3)
-    } else if (this.state.type === 'idle' && KeyMap.RIGHT) {
-      this.jump(0.2, 0.2)
-    } else if (this.state.type === 'jump' && (KeyPressedMap.UP)) {
+    if (this.state.type === 'idle') {
+      if (KeyMap.UP) {
+        this.jump(0.2, 0.3)
+      } else if (KeyMap.RIGHT) {
+        this.jump(0.2, 0.2)
+      } else if (KeyMap.LEFT) {
+        this.jump(-0.2, 0.2)
+      }
+    } else if (this.state.type === 'jump' && this.state.phase > 12 && KeyMap.UP) {
       this.fly()
       this.velocity.y = 0.1
-    } else if (this.state.type === 'fly' && (KeyMap.UP)) {
-      this.velocity.y = Math.min(this.velocity.y + 0.06, 0.04)
+    } else if (this.state.type === 'fly') {
+      if (KeyMap.UP) {
+        this.velocity.y = Math.min(this.velocity.y + 0.06, 0.04)
+      }
+      if (KeyMap.RIGHT) {
+        this.velocity.x = Math.min(this.velocity.x + 0.02, 0.2)
+      }
+      if (KeyMap.LEFT) {
+        this.velocity.x = Math.max(this.velocity.x - 0.02, -0.2)
+      }
     }
-    if (KeyMap.SPACE) {
+    if (KeyMap.SPACE || KeyMap.DOWN) {
       this.startAttack()
     }
+    if (this.velocity.x < 0) this.dir = -1
+    if (this.velocity.x > 0) this.dir = +1
   }
   render(ctx) {
     this.state.render(ctx)
