@@ -13,6 +13,21 @@ class Buncho {
       drill: null
     }
   }
+  hitRange() {
+    return {
+      x: this.position.x,
+      y: this.position.y,
+      r: this.legH / 2
+    }
+  }
+  attackRange() {
+    if (this.attack.cooldown < 10) return
+    return {
+      x: this.position.x + this.dir,
+      y: this.position.y,
+      r: 1
+    }
+  }
   idle() {
     this.state = {
       type: 'idle',
@@ -152,6 +167,8 @@ class Buncho {
     }
   }
   render(ctx) {
+    ctx.save()
     this.state.render(ctx)
+    ctx.restore()
   }
 }

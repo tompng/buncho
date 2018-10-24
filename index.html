@@ -13,20 +13,55 @@ onload = () => {
   const ctx = canvas.getContext('2d')
   canvas.style.width = 512
   canvas.style.boxShadow='0 0 1px black'
-  const b = new Buncho()
-  const stage = new Stage()
-  const enemies = [new Enemy(), new Enemy()]
+  let b, stage, gameover
+  function initialize() {
+    gameover = null
+    enemies = [new Enemy(), new Enemy()]
+    b = new Buncho()
+    stage = new Stage()
+  }
+  initialize()
   setInterval(()=>{
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 800)
     ctx.scale(64, -64)
-    b.update(keymap, stage)
-    enemies.forEach(e => e.update(b.position))
-    enemies.forEach(e => e.render(ctx))
+    const hrange = b.hitRange()
+    if (gameover) {
+      gameover.count++
+      if (gameover.count > 100) {
+        gameover = null
+        initialize()
+      }
+    }
+    if (!gameover) {
+      b.update(keymap, stage)
+      enemies.forEach(e => e.update(b))
+    }
+    enemies.forEach(e => {
+      if (!gameover && e.test(hrange)) gameover = {
+        count: 0
+      }
+    })
     keymap.clear()
     stage.render(ctx)
+    enemies.forEach(e => e.render(ctx))
     b.render(ctx)
+    if (gameover) {
+      ctx.save()
+      ctx.translate(b.position.x + 1.2, b.position.y + 0.4)
+      ctx.lineWidth = 0.2
+      ctx.strokeStyle = 'gray'
+      ctx.fillStyle = 'red'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.beginPath()
+      ctx.rect(-0.15, -0.15, 0.3, 0.3)
+      ctx.rect(-0.15, 0.4, 0.3, 0.8)
+      ctx.stroke()
+      ctx.fill()
+      ctx.restore()
+    }
     ctx.restore()
   }, 20)
 }
