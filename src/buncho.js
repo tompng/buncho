@@ -145,8 +145,10 @@ class Buncho {
     } else if (testResult && testResult.type === 'land') {
       this.position = testResult.pos
       this.floor = testResult.floor
-      if (this.velocity.y < 0) this.velocity = { x: 0, y: 0 }
-      this.idle()
+      if (this.velocity.y < 0) {
+        this.velocity = { x: 0, y: 0 }
+        this.idle()
+      }
     }
   }
   render(ctx) {
