@@ -3,15 +3,21 @@
 const canvas = document.createElement('canvas')
 onload = () => {
   document.body.appendChild(canvas)
-  canvas.width = canvas.height = 512
+  canvas.width = canvas.height = 1024
   const ctx = canvas.getContext('2d')
-  ctx.translate(256, 256)
-  ctx.scale(256, -256)
+  canvas.style.width = 512
   canvas.style.boxShadow='0 0 1px black'
-  const b=new Buncho()
+  const bs = new BunchoShape()
+  const b = new Buncho()
   setInterval(()=>{
-    ctx.clearRect(-1, -1, 2, 2)
-    b.render(ctx, performance.now()/1000%1)
+    ctx.save()
+    ctx.clearRect(0, 0, 1024, 1024)
+    ctx.translate(512, 512)
+    ctx.scale(128, -128)
+    // bs.render(ctx, Math.sin(performance.now()/100)*0.01)
+    b.update()
+    b.render(ctx)
+    ctx.restore()
   })
 }
 </script>

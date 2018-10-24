@@ -29,10 +29,9 @@ CanvasRenderingContext2D.prototype.curve = function(points, closed) {
   }
 }
 
-class Buncho {
+class BunchoShape {
   constructor() {
-    // jump(phase)
-    // drill()
+    this.legH = 0.6
   }
   normalShape() {
     return {
@@ -46,23 +45,37 @@ class Buncho {
         { x: 0.7, y: 0.3 },
         { x: 0.9, y: 0.38 },
       ],
-      leg: [{ x: 0, y: -0.3 }, { x: -0.2, y: -0.45 }, { x: 0.2, y: -0.6 },]
     }
   }
-  render(ctx, jumpPhase) {
+  render(ctx, legPosition, rotate) {
     ctx.lineWidth = 0.02
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.save()
     const shape = this.normalShape()
-    const legH = jumpPhase * (4 * jumpPhase - 1) * (1 - jumpPhase) ** 2
-    ctx.translate(legH / 2, legH)
-    this.renderLegs(ctx, shape.leg.map((p, i) => {
-      return {
-        x: p.x + (i == 1 ? 1 : 0) * legH / 4 - i * legH / 4,
-        y: p.y - i * legH / 2
-      }
-    }))
+    const legStart = { x: 0, y: -0.3 }
+    const leg1 = { x: 0, y: -0.3 }
+    const legEndBase = { x: 0.1, y: -0.7 }
+    const lpdx = legPosition.x - legEndBase.x
+    const lpdy = legPosition.y - legEndBase.y
+    const lr = Math.sqrt(lpdx ** 2 + lpdy ** 2)
+    const legEnd = { ...legPosition }
+    const lrMax = 0.2
+    if (lr > lrMax) {
+      legEnd.x = legEndBase.x + lrMax * lpdx / lr
+      legEnd.y = legEndBase.y + lrMax * lpdy / lr
+    }
+    const ldx = legEnd.x - legStart.x
+    const ldy = legEnd.y - legStart.y
+    this.renderLegs(ctx, [
+      legStart,
+      {
+        x: -0.3 - ldy / 4,
+        y: -0.5 + ldx / 4
+      },
+      legEnd
+    ])
+    ctx.rotate(rotate || 0)
     ctx.beginPath()
     ctx.curve(shape.up)
     ctx.curve(shape.down)
@@ -114,4 +127,65 @@ class Buncho {
     renderLeg(leg.map((p, i) => { return { x: p.x + 0.02 - 0.1 * i , y: p.y + 0.02 * i }}))
     renderLeg(leg)
   }
+}
+
+
+class Buncho {
+  constructor() {
+    this.shape = new BunchoShape()
+    this.yFromLeg = this.shape.legH
+    this.position = { x: 0, y: this.yFromLeg }
+    this.velocity = { x: 0, y: 0 }
+    this.floor = { x: 0, y: 0 }
+    this.idle()
+  }
+  idle() {
+    this.state = {
+      type: 'idle',
+      phase: 0,
+      render: (ctx) => {
+        const h = Math.sin(this.state.phase * 0.04) * 0.02
+        const hx = Math.sin(this.state.phase * 0.04 - 1) * 0.01
+        ctx.translate(this.position.x + hx, this.position.y + h)
+        this.shape.render(
+          ctx,
+          { x: this.floor.x - this.position.x - hx, y: this.floor.y - this.position.y - h },
+          -hx
+        )
+      }
+    }
+  }
+  jump() {
+    this.state = {
+      type: 'jump',
+      leg: this.floor,
+      phase: 0,
+      render: (ctx) => {
+        if (phase < 10) {
+
+        }
+        ctx.translate()
+      }
+    }
+    this.floor = null
+    this.velocity = { x: 0.01, y: 0.02 }
+  }
+  update() {
+    this.state.phase ++
+    this.position.x += this.velocity.x
+    this.position.y += this.velocity.y
+    if (this.position.y < this.yFromLeg) {
+      this.position.y = this.yFromLeg
+      this.floor = { x: this.position.x, y: this.position.y - 0.2 }
+      this.idle()
+    }
+    if (this.state.type !== 'idle') {
+      this.velocity.y = Math.max(this.velocity.y - 0.1, -10)
+    }
+    this.velocity
+  }
+  render(ctx) {
+    this.state.render(ctx)
+  }
+
 }
