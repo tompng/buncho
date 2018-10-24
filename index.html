@@ -9,13 +9,18 @@ onload = () => {
   canvas.style.boxShadow='0 0 1px black'
   const bs = new BunchoShape()
   const b = new Buncho()
+  let key = false
+  document.onkeypress = function(){
+    key = true
+  }
   setInterval(()=>{
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 512)
     ctx.scale(128, -128)
     // bs.render(ctx, Math.sin(performance.now()/100)*0.01)
-    b.update()
+    b.update(key)
+    key = false
     b.render(ctx)
     ctx.restore()
   })

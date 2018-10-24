@@ -60,7 +60,7 @@ class BunchoShape {
     const lpdy = legPosition.y - legEndBase.y
     const lr = Math.sqrt(lpdx ** 2 + lpdy ** 2)
     const legEnd = { ...legPosition }
-    const lrMax = 0.2
+    const lrMax = 0.3
     if (lr > lrMax) {
       legEnd.x = legEndBase.x + lrMax * lpdx / lr
       legEnd.y = legEndBase.y + lrMax * lpdy / lr
@@ -133,13 +133,14 @@ class BunchoShape {
 class Buncho {
   constructor() {
     this.shape = new BunchoShape()
-    this.yFromLeg = this.shape.legH
-    this.position = { x: 0, y: this.yFromLeg }
+    this.legH = this.shape.legH
+    this.position = { x: 0, y: this.legH }
     this.velocity = { x: 0, y: 0 }
     this.floor = { x: 0, y: 0 }
-    this.idle()
+    this.jump()
   }
   idle() {
+    this.floor = { x: this.position.x, y: this.position.y - this.legH }
     this.state = {
       type: 'idle',
       phase: 0,
@@ -161,28 +162,41 @@ class Buncho {
       leg: this.floor,
       phase: 0,
       render: (ctx) => {
-        if (phase < 10) {
-
+        const lt = Math.exp(-this.state.phase / 32)
+        const pt = Math.exp(-this.state.phase / 16)
+        const pos = { x: this.position.x, y: this.position.y - 0.5 * 4 * (1 - pt) * pt }
+        const leg = {
+          x: this.state.leg.x * lt + this.position.x * (1 - lt),
+          y: this.state.leg.y * lt + (this.position.y - this.legH) * (1 - lt)
         }
-        ctx.translate()
+        ctx.translate(pos.x, pos.y)
+        this.shape.render(
+          ctx,
+          { x: leg.x - pos.x, y: leg.y - pos.y }
+        )
       }
     }
     this.floor = null
-    this.velocity = { x: 0.01, y: 0.02 }
+    this.velocity = { x: 0.02, y: 0.05 }
   }
-  update() {
+  update(key) {
     this.state.phase ++
     this.position.x += this.velocity.x
     this.position.y += this.velocity.y
-    if (this.position.y < this.yFromLeg) {
-      this.position.y = this.yFromLeg
+    if (this.position.y < this.legH) {
+      this.position.y = this.legH
       this.floor = { x: this.position.x, y: this.position.y - 0.2 }
+      this.velocity = { x: 0, y: 0 }
       this.idle()
     }
     if (this.state.type !== 'idle') {
-      this.velocity.y = Math.max(this.velocity.y - 0.1, -10)
+      this.velocity.y = Math.max(this.velocity.y - 0.001, -10)
     }
     this.velocity
+    if (this.position.x > 4) this.position.x = -4
+    if (this.state.type === 'idle' && key) {
+      this.jump()
+    }
   }
   render(ctx) {
     this.state.render(ctx)
