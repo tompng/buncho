@@ -167,17 +167,18 @@ class BunchoShape {
       ctx.strokeStyle = 'black'
       ctx.stroke()
     }
+    if (option.wings) {
+      option.wings.forEach(w => {
+        ctx.beginPath()
+        ctx.curve([
+          { x: 0.2, y: 0.2 + w / 4},{x: 0.1, y: 0.3 + w},{ x: -0.3, y: 0.1 + w / 4 }
+        ])
+        ctx.fillStyle = 'white'
+        ctx.fill()
+        ctx.stroke()
+      })
+    }
     ctx.restore()
-    if (!option.wings) return
-    option.wings.forEach(w => {
-      ctx.beginPath()
-      ctx.curve([
-        { x: 0.2, y: 0.2 + w / 4},{x: 0.1, y: 0.3 + w},{ x: -0.3, y: 0.1 + w / 4 }
-      ])
-      ctx.fillStyle = 'white'
-      ctx.fill()
-      ctx.stroke()
-    })
   }
   renderLegs(ctx, legBase, theta) {
     function renderLeg(leg) {
