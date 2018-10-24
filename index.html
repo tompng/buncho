@@ -1,55 +1,24 @@
-<script src='app.js'></script>
+<script src='src/shape.js'></script>
+<script src='src/buncho.js'></script>
+<script src='src/key.js'></script>
 <script>
 const canvas = document.createElement('canvas')
-function keyCodeToName(keyCode) {
-  switch (keyCode) {
-    case 37:
-    case 65:
-      return 'LEFT'
-    case 38:
-    case 87:
-      return 'UP'
-    case 39:
-    case 68:
-      return 'RIGHT'
-    case 40:
-    case 83:
-      return 'DOWN'
-      break
-    case 32:
-      return 'SPACE'
-  }
-}
 onload = () => {
+  const keymap = new KeyMap()
+  keymap.attach(document)
   document.body.appendChild(canvas)
   canvas.width = canvas.height = 1024
   const ctx = canvas.getContext('2d')
   canvas.style.width = 512
   canvas.style.boxShadow='0 0 1px black'
   const b = new Buncho()
-  const KeyMap = {}
-  const KeyPressedMap = {}
-
-  document.onkeydown = function(e){
-    const name = keyCodeToName(e.keyCode)
-    if (name) {
-      if (!KeyMap[name]) KeyPressedMap[name] = true
-      KeyMap[name] = true
-    }
-  }
-  document.onkeyup = function(e){
-    const name = keyCodeToName(e.keyCode)
-    if (name) {
-      KeyMap[name] = false
-    }
-  }
   setInterval(()=>{
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 800)
     ctx.scale(128, -128)
-    b.update(KeyMap, KeyPressedMap)
-    for (const key in KeyPressedMap) KeyPressedMap[key] = false
+    b.update(keymap)
+    keymap.clear()
     b.render(ctx)
     ctx.restore()
   }, 20)
