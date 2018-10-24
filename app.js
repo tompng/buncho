@@ -31,7 +31,8 @@ CanvasRenderingContext2D.prototype.curve = function(points, closed) {
 
 class Buncho {
   constructor() {
-
+    // jump(phase)
+    // drill()
   }
   normalShape() {
     return {
@@ -48,14 +49,20 @@ class Buncho {
       leg: [{ x: 0, y: -0.3 }, { x: -0.2, y: -0.45 }, { x: 0.2, y: -0.6 },]
     }
   }
-  render(ctx) {
+  render(ctx, jumpPhase) {
     ctx.lineWidth = 0.02
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
+    ctx.save()
     const shape = this.normalShape()
-
-    this.renderLeg(ctx, shape.leg.map((p, i) => { return { x: p.x + 0.15 - 0.1 * i , y: p.y + 0.02 * i }}))
-    this.renderLeg(ctx, shape.leg)
+    const legH = jumpPhase * (4 * jumpPhase - 1) * (1 - jumpPhase) ** 2
+    ctx.translate(legH / 2, legH)
+    this.renderLegs(ctx, shape.leg.map((p, i) => {
+      return {
+        x: p.x + (i == 1 ? 1 : 0) * legH / 4 - i * legH / 4,
+        y: p.y - i * legH / 2
+      }
+    }))
     ctx.beginPath()
     ctx.curve(shape.up)
     ctx.curve(shape.down)
@@ -82,24 +89,29 @@ class Buncho {
     ctx.strokeStyle = 'black'
     ctx.fill()
     ctx.stroke()
+    ctx.restore()
   }
-  renderLeg(ctx, leg) {
-    ctx.beginPath()
-    ctx.moveTo(leg[0].x, leg[0].y)
-    ctx.lineTo(leg[1].x, leg[1].y)
-    ctx.lineTo(leg[2].x, leg[2].y)
-    const x = leg[2].x
-    const y = leg[2].y
-    ctx.curve([
-      { x: x - 0.1, y: y - 0.1 },
-      { x, y },
-      { x: x + 0.2, y: y },
-    ])
-    ctx.lineWidth *= 3
-    ctx.strokeStyle = 'black'
-    ctx.stroke()
-    ctx.lineWidth /= 3
-    ctx.strokeStyle = '#f88'
-    ctx.stroke()
+  renderLegs(ctx, leg) {
+    function renderLeg(leg) {
+      ctx.beginPath()
+      ctx.moveTo(leg[0].x, leg[0].y)
+      ctx.lineTo(leg[1].x, leg[1].y)
+      ctx.lineTo(leg[2].x, leg[2].y)
+      const x = leg[2].x
+      const y = leg[2].y
+      ctx.curve([
+        { x: x - 0.1, y: y - 0.1 },
+        { x, y },
+        { x: x + 0.2, y: y },
+      ])
+      ctx.lineWidth *= 3
+      ctx.strokeStyle = 'black'
+      ctx.stroke()
+      ctx.lineWidth /= 3
+      ctx.strokeStyle = '#f88'
+      ctx.stroke()
+    }
+    renderLeg(leg.map((p, i) => { return { x: p.x + 0.02 - 0.1 * i , y: p.y + 0.02 * i }}))
+    renderLeg(leg)
   }
 }

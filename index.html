@@ -8,6 +8,10 @@ onload = () => {
   ctx.translate(256, 256)
   ctx.scale(256, -256)
   canvas.style.boxShadow='0 0 1px black'
-  new Buncho().render(ctx)
+  const b=new Buncho()
+  setInterval(()=>{
+    ctx.clearRect(-1, -1, 2, 2)
+    b.render(ctx, performance.now()/1000%1)
+  })
 }
 </script>
