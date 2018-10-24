@@ -139,7 +139,7 @@ class BunchoShape {
       ctx.fill()
       ctx.stroke()
       ctx.beginPath()
-      ctx.arc(shape.eye.x + 0.02, shape.eye.y + 0.02, 0.02, 0, 2 * Math.PI)
+      ctx.arc(shape.eye.x + option.dir * 0.02, shape.eye.y + 0.02, 0.02, 0, 2 * Math.PI)
       ctx.fillStyle = 'white'
       ctx.fill()
     }
