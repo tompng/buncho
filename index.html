@@ -2,6 +2,7 @@
 <script src='src/buncho.js'></script>
 <script src='src/key.js'></script>
 <script src='src/stage.js'></script>
+<script src='src/enemy.js'></script>
 <script>
 const canvas = document.createElement('canvas')
 onload = () => {
@@ -14,12 +15,15 @@ onload = () => {
   canvas.style.boxShadow='0 0 1px black'
   const b = new Buncho()
   const stage = new Stage()
+  const enemies = [new Enemy(), new Enemy()]
   setInterval(()=>{
     ctx.save()
     ctx.clearRect(0, 0, 1024, 1024)
     ctx.translate(512, 800)
     ctx.scale(64, -64)
     b.update(keymap, stage)
+    enemies.forEach(e => e.update(b.position))
+    enemies.forEach(e => e.render(ctx))
     keymap.clear()
     stage.render(ctx)
     b.render(ctx)
