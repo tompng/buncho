@@ -81,6 +81,10 @@ class BunchoShape {
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.save()
+    if (option.dir < 0) {
+      ctx.scale(-1, 1)
+      option = { ...option, leg: { ...option.leg, x: -option.leg.x } }
+    }
     const shape = option.drill ? this.drillShape() : this.normalShape()
     const legStart = { x: 0, y: -0.3 }
     const leg1 = { x: 0, y: -0.3 }
@@ -233,6 +237,7 @@ class Buncho {
         this.shape.render(
           ctx,
           {
+            dir: this.dir,
             leg: { x: this.floor.x - this.position.x - hx, y: this.floor.y - this.position.y - h },
             rotate: -hx,
             drill: this.attack.drill
@@ -249,6 +254,7 @@ class Buncho {
         this.shape.render(
           ctx,
           {
+            dir: this.dir,
             leg: { x: -1, y: -0.5, theta: 0.6 },
             wings: [2 * Math.random() - 1, 2 * Math.random() - 1, 2 * Math.random() - 1],
             drill: this.attack.drill
@@ -273,7 +279,7 @@ class Buncho {
         ctx.translate(pos.x, pos.y)
         this.shape.render(
           ctx,
-          { leg: { x: leg.x - pos.x, y: leg.y - pos.y, grad: 0 }, drill: this.attack.drill }
+          { dir: this.dir, leg: { x: leg.x - pos.x, y: leg.y - pos.y, grad: 0 }, drill: this.attack.drill }
         )
       }
     }
@@ -322,6 +328,7 @@ class Buncho {
       this.velocity.x *= 0.96
     }
     if (this.position.x > 4) this.position.x = -4
+    if (this.position.x < -4) this.position.x = +4
     if (this.state.type === 'idle') {
       if (KeyMap.UP) {
         this.jump(0.2, 0.3)
