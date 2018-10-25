@@ -123,12 +123,13 @@ class Buncho {
       }
       this.velocity.x *= 0.96
     }
+    const xdir = (keymap.current.RIGHT ? 1 : 0) - (keymap.current.LEFT ? 1 : 0)
     if (this.state.type === 'idle') {
       if (keymap.current.UP) {
         this.jump(0.2 * this.dir, 0.3)
-      } else if (keymap.current.RIGHT) {
+      } else if (xdir > 0) {
         this.jump(0.2, 0.2)
-      } else if (keymap.current.LEFT) {
+      } else if (xdir < 0) {
         this.jump(-0.2, 0.2)
       }
     } else if (this.state.type === 'jump' && this.state.phase > 12 && keymap.current.UP) {
