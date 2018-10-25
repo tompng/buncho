@@ -100,14 +100,14 @@ class BunchoShape {
     }
     const ldx = legEnd.x - legStart.x
     const ldy = legEnd.y - legStart.y
-    this.renderLegs(ctx, [
-      legStart,
-      {
-        x: -0.3 - ldy / 4,
-        y: -0.5 + ldx / 4
-      },
-      legEnd
-    ], option.leg.theta || 0)
+    const boneLength = 0.25
+    const ldr = Math.sqrt(ldx ** 2 + ldy ** 2) / 2
+    const l = Math.sqrt(Math.max(boneLength ** 2 - ldr ** 2, 0))
+    const legMiddle = {
+      x: (legStart.x + legEnd.x) / 2 + l * ldy / ldr / 2,
+      y: (legStart.y + legEnd.y) / 2 - l * ldx / ldr / 2
+    }
+    this.renderLegs(ctx, [legStart, legMiddle, legEnd], option.leg.theta || 0)
     ctx.rotate(option.rotate || 0)
     ctx.beginPath()
     ctx.curve(shape.up)
