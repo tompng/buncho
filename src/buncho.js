@@ -146,6 +146,9 @@ class Buncho {
         this.velocity.x = Math.max(this.velocity.x - 0.02, -0.2)
       }
     }
+    if (this.state.type === 'jump' && this.velocity.y < -0.4) {
+      this.fly()
+    }
     if (keymap.current.SPACE || keymap.current.DOWN) {
       this.startAttack()
     }
