@@ -71,17 +71,15 @@ class Buncho {
       leg: this.floor,
       phase: 0,
       render: (ctx) => {
-        const lt = Math.exp(-this.state.phase / 8)
-        const pt = Math.exp(-this.state.phase / 4)
-        const pos = { x: this.position.x, y: this.position.y - 0.5 * 4 * (1 - pt) * pt * 0 }
+        const lt = Math.exp(-this.state.phase / 6)
         const leg = {
           x: this.state.leg.x * lt + this.position.x * (1 - lt),
           y: this.state.leg.y * lt + (this.position.y - this.legH) * (1 - lt)
         }
-        ctx.translate(pos.x, pos.y)
+        ctx.translate(this.position.x, this.position.y)
         this.shape.render(
           ctx,
-          { dir: this.dir, leg: { x: leg.x - pos.x, y: leg.y - pos.y, grad: 0 }, drill: this.attack.drill }
+          { dir: this.dir, leg: { x: leg.x - this.position.x, y: leg.y - this.position.y, grad: 0 }, drill: this.attack.drill }
         )
       }
     }
