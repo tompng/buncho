@@ -73,7 +73,7 @@ class Buncho {
       render: (ctx) => {
         const lt = Math.exp(-this.state.phase / 8)
         const pt = Math.exp(-this.state.phase / 4)
-        const pos = { x: this.position.x, y: this.position.y - 0.5 * 4 * (1 - pt) * pt }
+        const pos = { x: this.position.x, y: this.position.y - 0.5 * 4 * (1 - pt) * pt * 0 }
         const leg = {
           x: this.state.leg.x * lt + this.position.x * (1 - lt),
           y: this.state.leg.y * lt + (this.position.y - this.legH) * (1 - lt)
@@ -126,11 +126,13 @@ class Buncho {
     const xdir = (keymap.current.RIGHT ? 1 : 0) - (keymap.current.LEFT ? 1 : 0)
     if (this.state.type === 'idle') {
       if (keymap.current.UP) {
-        this.jump(0.2 * this.dir, 0.3)
+        this.jump(0.1 * this.dir, 0.4)
       } else if (xdir > 0) {
-        this.jump(0.2, 0.2)
+        const th = Math.max(this.floor.theta || 0, 0) + Math.PI / 4
+        this.jump(0.2 * Math.cos(th) + 0.1, 0.3 * Math.sin(th))
       } else if (xdir < 0) {
-        this.jump(-0.2, 0.2)
+        const th = -Math.min(this.floor.theta || 0, 0) + Math.PI / 4
+        this.jump(-0.2 * Math.cos(th) - 0.1, 0.3 * Math.sin(th))
       }
     } else if (this.state.type === 'jump' && this.state.phase > 12 && keymap.current.UP) {
       this.fly()
@@ -162,9 +164,9 @@ class Buncho {
       this.position = { ...testResult.pos }
       this.velocity = { x: dir.x * v, y: dir.y * v}
     } else if (testResult && testResult.type === 'land') {
-      this.position = testResult.pos
-      this.floor = testResult.floor
-      if (this.velocity.y < 0) {
+      if (this.position.y < testResult.pos.y) {
+        this.position = testResult.pos
+        this.floor = testResult.floor
         this.velocity = { x: 0, y: 0 }
         this.idle()
       }

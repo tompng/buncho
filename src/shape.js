@@ -100,7 +100,7 @@ class BunchoShape {
     }
     const ldx = legEnd.x - legStart.x
     const ldy = legEnd.y - legStart.y
-    const boneLength = 0.25
+    const boneLength = 0.3
     const ldr = Math.sqrt(ldx ** 2 + ldy ** 2) / 2
     const l = Math.sqrt(Math.max(boneLength ** 2 - ldr ** 2, 0))
     const legMiddle = {
