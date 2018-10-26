@@ -3,12 +3,15 @@ class Stage {
     this.objects = [
       {x: 1, y: 8, r: 1, id: 0 },
       {x: -1, y: 5, r: 1, id: 1 },
-      {x: 6, y: 0, r: 3, id: 2 },
-      {x: -7, y: 4, r: 2, id: 3 }
+      {x: 8, y: -7, r: 9, id: 2 },
+      {x: -7, y: 4, r: 2, id: 3 },
+      {x: 7, y: 11, r: 3, id: 4 },
+      {x: -6, y: 14, r: 3, id: 5 },
+      {x: 2, y: 15, r: 1, id: 5 },
     ]
-    this.xmin = -8
-    this.xmax = 8
-    this.ymax = 12
+    this.xmin = -12
+    this.xmax = 12
+    this.ymax = 20
     this.colors = [
       '#a8f', '#fa8', '#8fa', '#8af'
     ]

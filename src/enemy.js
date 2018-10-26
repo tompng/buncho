@@ -1,7 +1,7 @@
 class Enemy {
   constructor(position, direction) {
     this.position = position || { x: 0, y: -4 }
-    this.direction = direction || { v: 0.02 + 0.01 * Math.random(), t: Math.PI / 2, a: 0.01 + 0.01 * Math.random() }
+    this.direction = direction || { v: 0.01 + 0.03 * Math.random(), t: Math.PI / 2, a: 0.01 + 0.01 * Math.random() }
     this.r = 1.2
     this.lefts = []
     this.rights = []

@@ -17,11 +17,18 @@ onload = () => {
   canvas.style.boxShadow='0 0 1px black'
   let b, stage, gameover
   let started = false
+  const camera = { x: 0, y: 0 }
+  const cameraSize = 6
   function initialize() {
     gameover = null
-    enemies = [new Enemy(), new Enemy()]
+    enemies = []
+    for (let x = -12; x <= 12; x += 4) {
+      enemies.push(new Enemy({ x, y: -4 }))
+    }
     b = new Buncho()
     stage = new Stage()
+    camera.x = 0
+    camera.y = cameraSize / 2
   }
   let opening = true
   const openingStage = new Stage()
@@ -75,11 +82,15 @@ onload = () => {
       return
     }
 
-    ctx.save()
-    ctx.clearRect(0, 0, 1024, 1024)
-    ctx.translate(512, 800)
-    ctx.scale(64, -64)
-    const hrange = b.hitRange()
+    function cameraClamp(x) {
+      return x < -2 ? -((x + 2) ** 2) : x > 2 ? (x - 2) ** 2 : 0
+    }
+    camera.x += cameraClamp(b.position.x - camera.x) * 0.2
+    camera.y += cameraClamp(b.position.y - camera.y) * 0.2
+    if (camera.y < cameraSize / 2) camera.y = cameraSize / 2
+    if (camera.y > stage.ymax - cameraSize) camera.y = stage.ymax - cameraSize
+    if (camera.x < stage.xmin + cameraSize) camera.x = stage.xmin + cameraSize
+    if (camera.x > stage.xmax - cameraSize) camera.x = stage.xmax - cameraSize
     if (gameover) {
       gameover.count++
       if (gameover.count > 100) {
@@ -88,6 +99,12 @@ onload = () => {
         initialize()
       }
     }
+    ctx.save()
+    ctx.clearRect(0, 0, 1024, 1024)
+    ctx.translate(512, 512)
+    ctx.scale(512 / cameraSize, -512 / cameraSize)
+    ctx.translate(-camera.x, -camera.y)
+    const hrange = b.hitRange()
     if (!gameover) {
       if (keymap.current.LEFT || keymap.current.RIGHT || keymap.current.UP) {
         started = true
